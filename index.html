@@ -8,6 +8,9 @@ html, body, div {
   align-items: center;
   justify-content: center;
 }
+body {
+  flex-direction: column;
+}
 #gameboard{
   margin-top: 50px;
   height: 300px;
@@ -76,13 +79,27 @@ html, body, div {
     </div>
   </div>
   
-
+<button id="start" onclick="game.start()">Start</button>
 
 
 
 
 
 <script>
+
+let playerCheck = true;
+
+document.addEventListener("click", function(e) {
+  if (e.target.className === "square"){
+if (playerCheck){
+  game.move(e.target.id)
+}
+if (!playerCheck){
+  game.computerMove(e.target.id)
+}
+playerCheck = (playerCheck) ? false : true
+}
+})
 
 const Player = (name, symbol) => {
 let playerName = name || "John Doe"; 
@@ -142,6 +159,7 @@ const gameBoard = (() => {
 const game = (() => {
 
   let currentPlayer = null
+  let player2 = Player("Computer", "O")
 
   const start = () => {
     if (currentPlayer == null) {
@@ -164,17 +182,30 @@ const game = (() => {
     currentPlayer.info() 
     
   }
+  
 
-  const move = (number) => {
-    gameBoard.update(number - 1 , currentPlayer.symbol)
+  const move = (number, symbol) => {
+    gameBoard.update(number - 1 , symbol || currentPlayer.symbol)
     gameBoard.render()
+    
+    //change later. revamp html to display the array, then this can change the array, not change the textContent
+    document.getElementById(`${number}`).textContent = symbol || currentPlayer.symbol
+
+ 
+  
 
   }
+  const computerMove = (number) => {
+    
+    move(number, player2.symbol)
+
+  }
+
   const clearBoard = () => {
 
 
   }
-  return {start, render, addPlayer, move}
+  return {start, render, addPlayer, move, computerMove}
 
 })();
 
