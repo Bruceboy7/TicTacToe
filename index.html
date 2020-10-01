@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+
+<style>
+html, body, div {
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#gameboard{
+  margin-top: 50px;
+  height: 300px;
+  width: 300px;
+  background-color: #e4d05e;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+
+}
+.rows {
+  display: flex;
+  flex-direction: row;
+  justify-content:space-evenly;
+  align-items: stretch;
+  
+  width: 300px;
+  height: 90px;
+  animation: fadein 2.5s 
+}
+@keyframes fadein {
+  from { opacity: 0; transform: scale(2); }
+  to   { opacity: 1; transform: scale(1);}
+}
+.square {
+
+  width: 90px;
+  height: 90px;
+  background-color: rgb(219, 223, 231);
+  border: 1px dashed rgba(72, 84, 138, 0.541);
+  box-shadow: 2px 2px 2px #333333dd
+
+}
+.square:hover{
+  transition-duration: 3s;
+  transform: scale(1.1) rotate(360deg);
+  
+}
+
+</style>
+
+<head>
+
+<title id="pageTitle">Tic-Tac-Toe</title>
+
+</head>
+
+<body>
+
+  <div id="gameboard">
+    <div id="firstRow" class="rows">
+      <div id="1" class="square">1</div>
+      <div id="2" class="square">2</div>
+      <div id="3" class="square">3</div>
+    </div>
+    <div id="secondRow" class="rows">
+      <div id="4" class="square">4</div>
+      <div id="5" class="square">5</div>
+      <div id="6" class="square">6</div>
+    </div>
+    <div id="thirdRow" class="rows">
+      <div id="7" class="square">7</div>
+      <div id="8" class="square">8</div>
+      <div id="9" class="square">9</div>
+    </div>
+  </div>
+  
+
+
+
+
+
+
+<script>
+
+const Player = (name, symbol) => {
+let playerName = name || "John Doe"; 
+let playerSymbol = symbol || "X";
+  
+  const sayHello = () => console.log(`Hello ${playerName}.`)
+  
+  const changeName = (newName) => {
+    
+    console.log(`New name changed from ${playerName} to ${newName}.`)
+    playerName = newName
+    
+  }
+  const changeSymbol = () => {
+    let newSymbol = (playerSymbol === "X") ? "O" : "X"
+    console.log(`New symbol changed from ${playerSymbol} to ${newSymbol}.`)
+    playerSymbol = newSymbol
+  }
+  const info = () => console.log(`Player Name: ${playerName}.  Player Symbol: ${playerSymbol}.`)
+
+  return {sayHello, changeName, changeSymbol, symbol: playerSymbol, info}
+
+}
+
+const gameBoard = (() => {
+  const gameboard = ['-', '-', '-', '-', '-', '-', '-', '-', '-']
+  
+  const cacheDom = () => {
+    //Where we'll Start
+  }
+
+  const render = () => {
+
+    console.log(`Gameboard: \n`)
+    let row = ""
+    let counter = 1
+    let ticTacToe = ["tic ", "tac", "toe"]
+    for (let i = 0; i < gameboard.length; i++) {
+      row += `${gameboard[i]}  `
+      if (counter === 3) {
+        console.log(`${ticTacToe[((i+1)/3)-1]}     ${row}\n`)
+        counter = 0
+        row = ''
+      }
+      counter++
+    }
+  }
+  
+  const update= (key, symbol) => {
+    gameboard[key] = symbol 
+
+  }
+  return {render, update}
+  
+})();
+
+const game = (() => {
+
+  let currentPlayer = null
+
+  const start = () => {
+    if (currentPlayer == null) {
+      currentPlayer = Player(prompt("what's your name?"))
+    }
+    currentPlayer.sayHello()
+    currentPlayer.info()
+    alert("The game is afoot!")
+    console.log("-------Tic-Tac-Toe-------------\n------.It.-----.Has.-----.Begun.----")
+    game.render()
+    return ("The Game is AFOOT!")
+  }
+  const render = () => {
+    gameBoard.render()
+    
+  }
+  const addPlayer = (name) => {
+    currentPlayer = Player(name)
+    currentPlayer.sayHello()
+    currentPlayer.info() 
+    
+  }
+
+  const move = (number) => {
+    gameBoard.update(number - 1 , currentPlayer.symbol)
+    gameBoard.render()
+
+  }
+  const clearBoard = () => {
+
+
+  }
+  return {start, render, addPlayer, move}
+
+})();
+
+
+</script>
+
+</body>
+
+</html>
