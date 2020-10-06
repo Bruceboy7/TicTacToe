@@ -57,6 +57,7 @@ text-shadow: 1px 1px 3px black;
 
 
 
+
 }
 .rows {
   display: flex;
@@ -245,6 +246,7 @@ const gameBoard = (() => {
     }
     isPlaying = true;
     currentPlayer = player1
+    $info.style = ""
   }
   const update = (key, symbol) => {
     if (gameboard[key] == "-"){
@@ -283,7 +285,9 @@ const gameBoard = (() => {
       isWinner = true
     }
     if (isWinner) {
-      alert(currentPlayer.sayHello() + " is the winner")
+      $info.textContent = (currentPlayer.sayHello() + " is the winner")
+      $info.style = "animation: emphasize 2s;"
+      
     }
     return isWinner
 
@@ -356,7 +360,7 @@ const gameBoard = (() => {
   }
   
   let possibilities = gameBoard.possibilities()
-  
+
   const computerMove = () => {
     
     let newArray = []
