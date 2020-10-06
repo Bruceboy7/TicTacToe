@@ -2,6 +2,18 @@
 <html>
 
 <style>
+
+html{
+  
+  background-image: url("https://www.youcubed.org/wp-content/uploads/2017/03/Tic-Tac-Toe-Product.jpg");
+  background-size: cover;
+  
+}
+
+#theGame{
+  display: flex;
+  flex-direction: column;
+}
 html, body, div {
 
   display: flex;
@@ -9,7 +21,14 @@ html, body, div {
   justify-content: center;
 }
 body {
-  flex-direction: column;
+  margin-top: 50px;
+  height: 80vh;
+  width: 80vw;
+  flex-direction: row;
+  background-color: rgba(237, 178, 100, 0.123);
+  border-radius: 20px;
+  box-shadow: 2px 2px 5px black;
+  justify-content: space-evenly;
 }
 #gameboard{
   margin-top: 50px;
@@ -20,6 +39,23 @@ body {
   flex-direction: column;
   justify-content: space-evenly;
   align-items: center;
+  box-shadow: 2px 2px 3px black;
+  margin-bottom: 20px;
+
+
+}
+#info{
+height: 200px;
+width: 200px;
+margin-bottom: 20px;
+background-color: rgba(0, 100, 0, 0.363);
+color: white;
+box-shadow: 1px 1px 3px black, 0 0 4px white;
+text-shadow: 1px 1px 3px black;
+
+
+
+
 
 }
 .rows {
@@ -27,28 +63,50 @@ body {
   flex-direction: row;
   justify-content:space-evenly;
   align-items: stretch;
-  
   width: 300px;
   height: 90px;
-  animation: fadein 2.5s 
+  
 }
 @keyframes fadein {
-  from { opacity: 0; transform: scale(2); }
-  to   { opacity: 1; transform: scale(1);}
+  0% { opacity: 0; transform: scale(1.7);}
+  100%  { opacity: 1; transform: scale(1);}
+}
+
+@keyframes emphasize {
+  0% {transform: scale(1);}
+  25% {transform: scale(.9); }
+  75% {transform: scale(1.1);}
+  100% {transform: scale(1);} 
+  
 }
 .square {
-
+  transition-duration: 1s;
   width: 90px;
   height: 90px;
   background-color: rgb(219, 223, 231);
   border: 1px dashed rgba(72, 84, 138, 0.541);
-  box-shadow: 2px 2px 2px #333333dd
-
+  box-shadow: 2px 2px 2px #333333dd;
+  animation: fadein 5s; 
+  font-size: 30px;
 }
 .square:hover{
   transition-duration: 3s;
-  transform: scale(1.1) rotate(360deg);
+  transform: scale(1.1) rotate(360deg); 
   
+}
+#symbol {
+  height:100px;
+  width: 100px;
+  font-size: 30px;
+  border-radius: 50px;
+  background-color: rgba(222, 184, 135, 0.3);
+  box-shadow: 2px 2px 3px black;
+  text-shadow: 0px 0px 5px rgb(255, 255, 255), 1px 1px;
+  
+}
+#stuff{
+  display: flex;
+  flex-direction: column;
 }
 
 </style>
@@ -61,151 +119,279 @@ body {
 
 <body>
 
+<div id="stuff">
+<div id="info">Player Info</div>
+<div id="symbol">X</div>
+</div>
+<div id="theGame">
   <div id="gameboard">
     <div id="firstRow" class="rows">
-      <div id="1" class="square">1</div>
-      <div id="2" class="square">2</div>
-      <div id="3" class="square">3</div>
+      <div id="1" class="square"></div>
+      <div id="2" class="square"></div>
+      <div id="3" class="square"></div>
     </div>
     <div id="secondRow" class="rows">
-      <div id="4" class="square">4</div>
-      <div id="5" class="square">5</div>
-      <div id="6" class="square">6</div>
+      <div id="4" class="square"></div>
+      <div id="5" class="square"></div>
+      <div id="6" class="square"></div>
     </div>
     <div id="thirdRow" class="rows">
-      <div id="7" class="square">7</div>
-      <div id="8" class="square">8</div>
-      <div id="9" class="square">9</div>
+      <div id="7" class="square"></div>
+      <div id="8" class="square"></div>
+      <div id="9" class="square"></div>
     </div>
   </div>
+
   
 <button id="start" onclick="game.start()">Start</button>
+<button id="twoPlayer" onclick="game.twoPlayer()">AI Mode (Click for 2 Player Mode)</button>
 
+
+</div>
 
 
 
 
 <script>
 
-let playerCheck = true;
 
-document.addEventListener("click", function(e) {
-  if (e.target.className === "square"){
-if (playerCheck){
-  game.move(e.target.id)
-}
-if (!playerCheck){
-  game.computerMove(e.target.id)
-}
-playerCheck = (playerCheck) ? false : true
-}
-})
+
+const game = (() => {
+
+  let currentPlayer = null
+  let player1 = null
+  let player2 = null
+  let isPlaying = false
+  let isAI = true
+  
+  let $board = document.getElementsByClassName("square")
+  let $twoPlayer = document.getElementById("twoPlayer")
+  let $symbol = document.getElementById("symbol")
+  let $info = document.getElementById('info')
+
 
 const Player = (name, symbol) => {
 let playerName = name || "John Doe"; 
 let playerSymbol = symbol || "X";
   
-  const sayHello = () => console.log(`Hello ${playerName}.`)
+  const sayHello = () => {
+    
+    console.log(`Alright, ${playerName}!`)
+    return playerName
+  }
   
   const changeName = (newName) => {
     
     console.log(`New name changed from ${playerName} to ${newName}.`)
     playerName = newName
-    
+    return playerName
   }
   const changeSymbol = () => {
     let newSymbol = (playerSymbol === "X") ? "O" : "X"
     console.log(`New symbol changed from ${playerSymbol} to ${newSymbol}.`)
     playerSymbol = newSymbol
+    return playerSymbol
   }
-  const info = () => console.log(`Player Name: ${playerName}.  Player Symbol: ${playerSymbol}.`)
+  const info = () => `Player Name: ${playerName}.  Player Symbol: ${playerSymbol}.`
 
-  return {sayHello, changeName, changeSymbol, symbol: playerSymbol, info}
+  const announceTurn = () => `${playerName}'s turn...`
+
+  const switchPlayer = () => {
+
+    if (currentPlayer === player1) {
+      
+      currentPlayer = player2
+      return 
+    }
+    if (currentPlayer === player2) {
+      
+      currentPlayer = player1
+      return 
+    } 
+  }
+  
+
+  return {sayHello, changeName, changeSymbol, symbol: playerSymbol, info, announceTurn, switchPlayer}
 
 }
 
 const gameBoard = (() => {
-  const gameboard = ['-', '-', '-', '-', '-', '-', '-', '-', '-']
-  
-  const cacheDom = () => {
-    //Where we'll Start
-  }
 
+  for (let i = 0; i < $board.length; i++) {
+      $board[i].addEventListener("click", function() {
+        if ((isPlaying) && (gameboard[i] == "-")){
+        game.move(i + 1) 
+        }
+        })}
+  
+  const gameboard = ['-', '-', '-', '-', '-', '-', '-', '-', '-']
+  const possibilities = () => {
+    let possibilities = gameboard
+    return possibilities
+  }
   const render = () => {
 
-    console.log(`Gameboard: \n`)
-    let row = ""
-    let counter = 1
-    let ticTacToe = ["tic ", "tac", "toe"]
     for (let i = 0; i < gameboard.length; i++) {
-      row += `${gameboard[i]}  `
-      if (counter === 3) {
-        console.log(`${ticTacToe[((i+1)/3)-1]}     ${row}\n`)
-        counter = 0
-        row = ''
-      }
-      counter++
+      $board[i].textContent = gameboard[i]
     }
+    $symbol.textContent = currentPlayer.symbol
+    $info.textContent = currentPlayer.announceTurn()
   }
-  
-  const update= (key, symbol) => {
-    gameboard[key] = symbol 
+  const reset = () => {
+
+    for (let i = 0; i < gameboard.length; i++){
+      gameboard[i] =  "-"
+
+    }
+    isPlaying = true;
+    currentPlayer = player1
+  }
+  const update = (key, symbol) => {
+    if (gameboard[key] == "-"){
+    gameboard[key] = symbol || currentPlayer.symbol
+    
+    gameBoard.render()
+    }
+
+  }  
+  const checkWinner = () => {
+    let isWinner = false
+
+    if ((gameboard[0] == gameboard[1]) && (gameboard[1] == gameboard[2]) && (gameboard[0] !== "-")){
+
+      isWinner = true
+    }
+    if ((gameboard[3] == gameboard[4]) && (gameboard[4] == gameboard[5]) && (gameboard[3] !== "-")){
+      isWinner = true
+    }
+    if ((gameboard[6] == gameboard[7]) && (gameboard[7] == gameboard[8]) && (gameboard[6] !== "-")){
+      isWinner = true
+    }
+    if ((gameboard[0] == gameboard[3]) && (gameboard[3] == gameboard[6]) && (gameboard[0] !== "-")){
+      isWinner = true
+    }
+    if ((gameboard[1] == gameboard[4]) && (gameboard[4] == gameboard[7]) && (gameboard[1] !== "-")){
+      isWinner = true
+    }
+    if ((gameboard[2] == gameboard[5]) && (gameboard[5] == gameboard[8]) && (gameboard[2] !== "-")){
+      isWinner = true
+    }
+    if ((gameboard[0] == gameboard[4]) && (gameboard[4] == gameboard[8]) && (gameboard[0] !== "-")){
+      isWinner = true
+    }
+    if ((gameboard[2] == gameboard[4]) && (gameboard[4] == gameboard[6]) && (gameboard[2] !== "-")){
+      isWinner = true
+    }
+    if (isWinner) {
+      alert(currentPlayer.sayHello() + " is the winner")
+    }
+    return isWinner
 
   }
-  return {render, update}
+  
+  return {render, update, reset, checkWinner, possibilities}
   
 })();
 
-const game = (() => {
 
-  let currentPlayer = null
-  let player2 = Player("Computer", "O")
 
   const start = () => {
     if (currentPlayer == null) {
-      currentPlayer = Player(prompt("what's your name?"))
+      player1 = Player(prompt("what's your name?"))
+      player2 = Player("Computer", "O")
+      currentPlayer = player1
+      alert(`${(currentPlayer.info())}`)
+      
+      
+      
     }
+    currentPlayer = player1
+    isPlaying = true
+
     currentPlayer.sayHello()
-    currentPlayer.info()
-    alert("The game is afoot!")
-    console.log("-------Tic-Tac-Toe-------------\n------.It.-----.Has.-----.Begun.----")
-    game.render()
-    return ("The Game is AFOOT!")
-  }
-  const render = () => {
-    gameBoard.render()
+    console.log(currentPlayer.info())
     
+    gameBoard.reset()
+    gameBoard.render()
+    return ("-------Tic-Tac-Toe-------------\nThe Game is AFOOT!")
   }
+ 
   const addPlayer = (name) => {
     currentPlayer = Player(name)
     currentPlayer.sayHello()
     currentPlayer.info() 
-    
+    return
   }
-  
+ 
+  const reset = () => {
 
+    gameBoard.reset()
+    gameBoard.render()
+  }
+ 
   const move = (number, symbol) => {
+    
     gameBoard.update(number - 1 , symbol || currentPlayer.symbol)
+    
+    if (gameBoard.checkWinner()) {
+      isPlaying = false
+      return
+    }
+    currentPlayer.switchPlayer()
     gameBoard.render()
     
-    //change later. revamp html to display the array, then this can change the array, not change the textContent
-    document.getElementById(`${number}`).textContent = symbol || currentPlayer.symbol
-
- 
+    if ((isPlaying) && (isAI)){
+      
+      computerMove()
+      
+    
+      if (gameBoard.checkWinner()) {
+        isPlaying = false
+        return
+      }
+      currentPlayer.switchPlayer()
+      gameBoard.render()
+      
+  }
+  }
+  
+  let possibilities = gameBoard.possibilities()
+  
+  const computerMove = () => {
+    
+    let newArray = []
+    let counter = 0
+    for (let i = 0; i < possibilities.length; i++){
+      if (possibilities[i] == "-"){
+      newArray[counter++] = i
+      
+      }
+    }
+   let number = Math.floor(Math.random() * newArray.length)
   
 
+      gameBoard.update(newArray[number])
+     // gameBoard.render()
+      $symbol.textContent = currentPlayer.symbol
+    }
+  
+  const twoPlayer = () => {
+    if (!player2) {
+      game.start()
+    }
+    isAI = (isAI) ? false : true
+    $twoPlayer.textContent = (!isAI) ? "Switch to AI" : "Switch to 2 Player"
+    if ((player2.sayHello() === "Computer") && (!isAI)) {
+      player2 = Player(prompt("Player 2, what's your name?"), 'O')
+      
+    }
+    game.reset()
   }
-  const computerMove = (number) => {
-    
-    move(number, player2.symbol)
-
-  }
-
-  const clearBoard = () => {
-
-
-  }
-  return {start, render, addPlayer, move, computerMove}
+  
+  const displayWinner = (winner) => alert(`${currentPlayer.sayHello() || winner} won`)
+  
+  
+  return {start, addPlayer, move, computerMove, reset, displayWinner, twoPlayer}
 
 })();
 
