@@ -226,10 +226,12 @@ const gameBoard = (() => {
         })}
   
   const gameboard = ['-', '-', '-', '-', '-', '-', '-', '-', '-']
+  
   const possibilities = () => {
     let possibilities = gameboard
     return possibilities
   }
+  
   const render = () => {
 
     for (let i = 0; i < gameboard.length; i++) {
@@ -238,8 +240,8 @@ const gameBoard = (() => {
     $symbol.textContent = currentPlayer.symbol
     $info.textContent = currentPlayer.announceTurn()
   }
+ 
   const reset = () => {
-
     for (let i = 0; i < gameboard.length; i++){
       gameboard[i] =  "-"
 
@@ -248,6 +250,7 @@ const gameBoard = (() => {
     currentPlayer = player1
     $info.style = ""
   }
+  
   const update = (key, symbol) => {
     if (gameboard[key] == "-"){
     gameboard[key] = symbol || currentPlayer.symbol
@@ -256,8 +259,10 @@ const gameBoard = (() => {
     }
 
   }  
+  
   const checkWinner = () => {
     let isWinner = false
+   
 
     if ((gameboard[0] == gameboard[1]) && (gameboard[1] == gameboard[2]) && (gameboard[0] !== "-")){
 
@@ -284,10 +289,27 @@ const gameBoard = (() => {
     if ((gameboard[2] == gameboard[4]) && (gameboard[4] == gameboard[6]) && (gameboard[2] !== "-")){
       isWinner = true
     }
-    if (isWinner) {
+    
+    
+    let anyEmpty = false
+    
+    for (let i = 0; i < gameboard.length; i++) {
+      if (gameboard[i] === "-") {
+        anyEmpty = true
+      }
+      
+
+    }
+    
+    if (isWinner === true) {
       $info.textContent = (currentPlayer.sayHello() + " is the winner")
       $info.style = "animation: emphasize 2s;"
       
+    }
+    if ((!anyEmpty) && (!isWinner)){
+      $info.textContent = ("It's a draw!!")
+      $info.style = "animation: emphasize 2s;"
+      isWinner = true
     }
     return isWinner
 
